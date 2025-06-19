@@ -15,6 +15,7 @@ local speed = Instance.new("ImageButton")
 local spectate = Instance.new("ImageButton")
 local TargetSpec = Instance.new("TextBox")
 local UICorner_2 = Instance.new("UICorner")
+local fling = Instance.new("ImageButton")
 local ImageButton = Instance.new("ImageButton")
 local UIAspectRatioConstraint_2 = Instance.new("UIAspectRatioConstraint")
 local UICorner_3 = Instance.new("UICorner")
@@ -31,7 +32,7 @@ Frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 Frame.BackgroundTransparency = 0.100
 Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 Frame.BorderSizePixel = 0
-Frame.Position = UDim2.new(-0.010276434, 433, 0.181818187, 19)
+Frame.Position = UDim2.new(-0.284369051, 796, 0.154150203, 45)
 Frame.Size = UDim2.new(0, 641, 0, 271)
 
 UICorner.CornerRadius = UDim.new(0, 10)
@@ -104,12 +105,22 @@ TargetSpec.BorderSizePixel = 0
 TargetSpec.Position = UDim2.new(0.409594089, 0, 0.114391141, 0)
 TargetSpec.Size = UDim2.new(0, 200, 0, 50)
 TargetSpec.Font = Enum.Font.Nunito
+TargetSpec.FontFace.Weight = Enum.FontWeight.SemiBold
 TargetSpec.Text = "Player To Spectate"
 TargetSpec.TextColor3 = Color3.fromRGB(255, 255, 255)
 TargetSpec.TextSize = 20.000
-TargetSpec.FontFace.Weight = Enum.FontWeight.SemiBold
 
 UICorner_2.Parent = TargetSpec
+
+fling.Name = "fling"
+fling.Parent = Frame
+fling.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+fling.BackgroundTransparency = 0.900
+fling.BorderColor3 = Color3.fromRGB(0, 0, 0)
+fling.BorderSizePixel = 0
+fling.Position = UDim2.new(0.239852399, 0, 0.372693717, 0)
+fling.Size = UDim2.new(0, 77, 0, 69)
+fling.Image = "rbxassetid://104574410413973"
 
 ImageButton.Parent = ScreenGui
 ImageButton.BackgroundColor3 = Color3.fromRGB(28, 46, 58)
@@ -127,7 +138,7 @@ UICorner_3.Parent = ImageButton
 
 -- Scripts:
 
-local function DQGP_fake_script() -- Frame.main 
+local function FIZNXLR_fake_script() -- Frame.main 
 	local script = Instance.new('LocalScript', Frame)
 
 	local Players = game:GetService("Players")
@@ -348,6 +359,53 @@ local function DQGP_fake_script() -- Frame.main
 		end
 	end
 	
+	local flingActive = false
+	local flingForce = 100000 -- Adjust strength here
+	local flingConnection
+	local bodyAngularVelocity
+	
+	function startFling()
+		if flingActive then return end
+		flingActive = true
+		print("Fling enabled")
+	
+		local character = player.Character
+		if not character then return end
+	
+		local rootPart = character:FindFirstChild("HumanoidRootPart")
+		if not rootPart then return end
+	
+		-- Add BodyAngularVelocity to spin the player
+		bodyAngularVelocity = Instance.new("BodyAngularVelocity")
+		bodyAngularVelocity.AngularVelocity = Vector3.new(0, flingForce, 0)
+		bodyAngularVelocity.MaxTorque = Vector3.new(0, 9e9, 0)
+		bodyAngularVelocity.P = 1250
+		bodyAngularVelocity.Parent = rootPart
+	
+		-- Optional: keep reapplying to stay persistent if the player resets or dies
+		flingConnection = RunService.Stepped:Connect(function()
+			if not flingActive or not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then
+				stopFling()
+			end
+		end)
+	end
+	
+	function stopFling()
+		if not flingActive then return end
+		flingActive = false
+		print("Fling disabled")
+	
+		if flingConnection then
+			flingConnection:Disconnect()
+			flingConnection = nil
+		end
+	
+		if bodyAngularVelocity then
+			bodyAngularVelocity:Destroy()
+			bodyAngularVelocity = nil
+		end
+	end
+	
 	ui.fly.MouseButton1Click:Connect(function()
 		if flying then
 			stopFlying()
@@ -380,9 +438,17 @@ local function DQGP_fake_script() -- Frame.main
 			spectatePlayer(targetName)
 		end
 	end)
+	
+	ui.fling.MouseButton1Click:Connect(function()
+		if flingActive then
+			stopFling()
+		else
+			startFling()
+		end
+	end)
 end
-coroutine.wrap(DQGP_fake_script)()
-local function AQFGBO_fake_script() -- ImageButton.LocalScript 
+coroutine.wrap(FIZNXLR_fake_script)()
+local function NJRU_fake_script() -- ImageButton.LocalScript 
 	local script = Instance.new('LocalScript', ImageButton)
 
 	local mainui = script.Parent
@@ -399,4 +465,4 @@ local function AQFGBO_fake_script() -- ImageButton.LocalScript
 		end
 	end)
 end
-coroutine.wrap(AQFGBO_fake_script)()
+coroutine.wrap(NJRU_fake_script)()
