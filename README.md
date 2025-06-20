@@ -4,6 +4,7 @@
 -- Instances:
 
 local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "PyEx"
 local Frame = Instance.new("Frame")
 local UICorner = Instance.new("UICorner")
 local UIAspectRatioConstraint = Instance.new("UIAspectRatioConstraint")
@@ -16,6 +17,7 @@ local spectate = Instance.new("ImageButton")
 local TargetSpec = Instance.new("TextBox")
 local UICorner_2 = Instance.new("UICorner")
 local fling = Instance.new("ImageButton")
+local health = Instance.new("ImageButton")
 local ImageButton = Instance.new("ImageButton")
 local UIAspectRatioConstraint_2 = Instance.new("UIAspectRatioConstraint")
 local UICorner_3 = Instance.new("UICorner")
@@ -32,7 +34,7 @@ Frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 Frame.BackgroundTransparency = 0.100
 Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 Frame.BorderSizePixel = 0
-Frame.Position = UDim2.new(-0.284369051, 796, 0.154150203, 45)
+Frame.Position = UDim2.new(-0.776233912, 1145, 0.142292485, 57)
 Frame.Size = UDim2.new(0, 641, 0, 271)
 
 UICorner.CornerRadius = UDim.new(0, 10)
@@ -122,6 +124,16 @@ fling.Position = UDim2.new(0.239852399, 0, 0.372693717, 0)
 fling.Size = UDim2.new(0, 77, 0, 69)
 fling.Image = "rbxassetid://104574410413973"
 
+health.Name = "health"
+health.Parent = Frame
+health.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+health.BackgroundTransparency = 0.900
+health.BorderColor3 = Color3.fromRGB(0, 0, 0)
+health.BorderSizePixel = 0
+health.Position = UDim2.new(0.239852399, 0, 0.656826496, 0)
+health.Size = UDim2.new(0, 77, 0, 69)
+health.Image = "rbxassetid://18416638478"
+
 ImageButton.Parent = ScreenGui
 ImageButton.BackgroundColor3 = Color3.fromRGB(28, 46, 58)
 ImageButton.BackgroundTransparency = 0.300
@@ -138,7 +150,7 @@ UICorner_3.Parent = ImageButton
 
 -- Scripts:
 
-local function FIZNXLR_fake_script() -- Frame.main 
+local function GSLBVEC_fake_script() -- Frame.main 
 	local script = Instance.new('LocalScript', Frame)
 
 	local Players = game:GetService("Players")
@@ -180,6 +192,15 @@ local function FIZNXLR_fake_script() -- Frame.main
 	local flightConnection
 	local inputBeganConnection
 	local inputEndedConnection
+	
+	local flingEnabled = false
+	local flingConnection = nil
+	local FlingAmount = 1000
+	local sit = false
+	local explode = false
+	
+	local immortal = false
+	local regenConnection = nil
 	
 	function startFlying()
 		if flying then return end
@@ -359,50 +380,91 @@ local function FIZNXLR_fake_script() -- Frame.main
 		end
 	end
 	
-	local flingActive = false
-	local flingForce = 100000 -- Adjust strength here
-	local flingConnection
-	local bodyAngularVelocity
-	
-	function startFling()
-		if flingActive then return end
-		flingActive = true
-		print("Fling enabled")
+	function startTouchFling()
+		if flingEnabled then return end
+		flingEnabled = true
+		print("Touch Fling enabled")
 	
 		local character = player.Character
 		if not character then return end
+		local hrp = character:FindFirstChild("HumanoidRootPart")
+		if not hrp then return end
 	
-		local rootPart = character:FindFirstChild("HumanoidRootPart")
-		if not rootPart then return end
+		flingConnection = hrp.Touched:Connect(function(hit)
+			local blender = hit.Parent and hit.Parent:FindFirstChild("Head")
+			if blender and hit.Parent ~= character then
+				local bv = Instance.new("BodyVelocity")
+				bv.P = 1250
+				bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+				bv.Velocity = blender.CFrame.LookVector * -FlingAmount
+				bv.Parent = blender
 	
-		-- Add BodyAngularVelocity to spin the player
-		bodyAngularVelocity = Instance.new("BodyAngularVelocity")
-		bodyAngularVelocity.AngularVelocity = Vector3.new(0, flingForce, 0)
-		bodyAngularVelocity.MaxTorque = Vector3.new(0, 9e9, 0)
-		bodyAngularVelocity.P = 1250
-		bodyAngularVelocity.Parent = rootPart
+				if sit then
+					local humanoid = hit.Parent:FindFirstChildWhichIsA("Humanoid")
+					if humanoid then
+						humanoid.Sit = true
+					end
+				end
 	
-		-- Optional: keep reapplying to stay persistent if the player resets or dies
-		flingConnection = RunService.Stepped:Connect(function()
-			if not flingActive or not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then
-				stopFling()
+				game.Debris:AddItem(bv, 0.05)
+	
+				if explode then
+					local ex = Instance.new("Explosion")
+					ex.ExplosionType = Enum.ExplosionType.NoCraters
+					ex.BlastPressure = 100000
+					ex.BlastRadius = 2
+					ex.Visible = true
+					ex.DestroyJointRadiusPercent = 0
+					ex.Position = blender.Position
+					ex.Parent = workspace
+	
+					local humanoid = hit.Parent:FindFirstChildWhichIsA("Humanoid")
+					if humanoid then
+						humanoid.Health = 0
+					end
+				end
 			end
 		end)
 	end
 	
-	function stopFling()
-		if not flingActive then return end
-		flingActive = false
-		print("Fling disabled")
+	function stopTouchFling()
+		if not flingEnabled then return end
+		flingEnabled = false
+		print("Touch Fling disabled")
 	
 		if flingConnection then
 			flingConnection:Disconnect()
 			flingConnection = nil
 		end
+	end
 	
-		if bodyAngularVelocity then
-			bodyAngularVelocity:Destroy()
-			bodyAngularVelocity = nil
+	function startImmortality()
+		if immortal then return end
+		immortal = true
+		print("Immortality enabled")
+	
+		regenConnection = RunService.Heartbeat:Connect(function()
+			local character = player.Character
+			if character then
+				local humanoid = character:FindFirstChildWhichIsA("Humanoid")
+				if humanoid then
+					if humanoid.Health < 100 then
+						humanoid.Health = 100
+					end
+				end
+			end
+		end)
+	end
+	
+	function stopImmortality()
+		if not immortal then return end
+		immortal = false
+		print("Immortality disabled")
+	
+		if regenConnection then
+			game.Players.LocalPlayer.Character:WaitForChild("Humanoid").Health = 100
+			regenConnection:Disconnect()
+			regenConnection = nil
 		end
 	end
 	
@@ -440,15 +502,24 @@ local function FIZNXLR_fake_script() -- Frame.main
 	end)
 	
 	ui.fling.MouseButton1Click:Connect(function()
-		if flingActive then
-			stopFling()
+		if flingEnabled then
+			stopTouchFling()
 		else
-			startFling()
+			startTouchFling()
 		end
 	end)
+	
+	ui.health.MouseButton1Click:Connect(function()
+		if immortal then
+			stopImmortality()
+		else
+			startImmortality()
+		end
+	end)
+	
 end
-coroutine.wrap(FIZNXLR_fake_script)()
-local function NJRU_fake_script() -- ImageButton.LocalScript 
+coroutine.wrap(GSLBVEC_fake_script)()
+local function IHNBAP_fake_script() -- ImageButton.LocalScript 
 	local script = Instance.new('LocalScript', ImageButton)
 
 	local mainui = script.Parent
@@ -465,4 +536,4 @@ local function NJRU_fake_script() -- ImageButton.LocalScript
 		end
 	end)
 end
-coroutine.wrap(NJRU_fake_script)()
+coroutine.wrap(IHNBAP_fake_script)()
